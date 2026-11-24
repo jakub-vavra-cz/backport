@@ -157,6 +157,10 @@ pr_create_args+=`echo $PR_REVIEWERS | tr ' ' '\n' | xargs -I{} echo -n "--review
 if [ "$has_conflict" -eq 1 ]; then
     pr_create_args+="--draft "
 fi
+# gh pr create fails on unknown labels, so add no-backport only if it exists in the base repository
+if gh api "repos/$GITHUB_REPOSITORY/labels/no-backport" >/dev/null 2>&1; then
+    pr_create_args+="--label no-backport "
+fi
 
 gh pr create $pr_create_args \
     --base "$TARGET" \
